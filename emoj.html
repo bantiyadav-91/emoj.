@@ -1,0 +1,366 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emoji World - Find Your Emoji</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #101322;
+  color: white;
+  transition: .3s;
+}
+
+header {
+  padding: 25px 8%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: bold;
+  color: #ffca55;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+}
+
+.hero {
+  text-align: center;
+  padding: 65px 20px 35px;
+}
+
+.hero h1 {
+  font-size: 45px;
+  margin-bottom: 15px;
+}
+
+.hero h1 span {
+  color: #ffca55;
+}
+
+.hero p {
+  color: #aaa;
+  margin-bottom: 30px;
+}
+
+.search {
+  width: 90%;
+  max-width: 550px;
+  padding: 17px;
+  border-radius: 12px;
+  border: 1px solid #383d55;
+  background: #1d2236;
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+
+.categories {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 25px 15px;
+}
+
+.categories button {
+  background: #22283d;
+  color: white;
+  font-size: 14px;
+}
+
+.categories button.active,
+.categories button:hover {
+  background: #ffca55;
+  color: #171717;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+.section-title {
+  margin: 20px 0;
+  font-size: 22px;
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+  gap: 12px;
+}
+
+.emoji-card {
+  background: #1d2236;
+  border: 1px solid #303750;
+  border-radius: 12px;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 35px;
+  transition: .2s;
+}
+
+.emoji-card:hover {
+  background: #343b56;
+  transform: translateY(-4px);
+}
+
+.message {
+  text-align: center;
+  color: #ffca55;
+  margin: 20px;
+  min-height: 22px;
+}
+
+footer {
+  text-align: center;
+  padding: 35px;
+  color: #888;
+}
+
+.light {
+  background: #f4f5fa;
+  color: #171717;
+}
+
+.light .search,
+.light .emoji-card,
+.light .categories button {
+  background: white;
+  color: #171717;
+  border-color: #ddd;
+}
+
+.light .categories button.active {
+  background: #ffca55;
+}
+
+.light .hero p {
+  color: #666;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">😀 Emoji World</div>
+  <button onclick="toggleTheme()" id="themeBtn">☀️ Theme</button>
+</header>
+
+<section class="hero">
+  <h1>Express Yourself with <span>Emojis</span></h1>
+  <p>Find the perfect emoji for every moment.</p>
+
+  <input
+    type="text"
+    class="search"
+    id="search"
+    placeholder="🔍 Search emojis... happy, love, fire"
+    oninput="renderEmojis()"
+  >
+</section>
+
+<nav class="categories" id="categories">
+  <button class="active" onclick="setCategory('All',this)">All</button>
+  <button onclick="setCategory('Smileys',this)">😀 Smileys</button>
+  <button onclick="setCategory('Animals',this)">🐱 Animals</button>
+  <button onclick="setCategory('Food',this)">🍕 Food</button>
+  <button onclick="setCategory('Nature',this)">🌳 Nature</button>
+  <button onclick="setCategory('Travel',this)">🚗 Travel</button>
+  <button onclick="setCategory('Hearts',this)">❤️ Hearts</button>
+  <button onclick="setCategory('Objects',this)">💡 Objects</button>
+  <button onclick="setCategory('Favorites',this)">⭐ Favorites</button>
+</nav>
+
+<main class="container">
+  <h2 class="section-title" id="heading">All Emojis</h2>
+  <div class="emoji-grid" id="emojiGrid"></div>
+  <div class="message" id="message"></div>
+</main>
+
+<footer>
+  <p>😀 Emoji World | Made with ❤️</p>
+  <p style="margin-top:10px">Click any emoji to copy it.</p>
+</footer>
+
+<script>
+const data = [
+['😀','grinning face','Smileys'],
+['😃','happy face','Smileys'],
+['😄','smile','Smileys'],
+['😁','big smile','Smileys'],
+['😂','laugh tears','Smileys'],
+['🤣','rolling laugh','Smileys'],
+['😊','blush','Smileys'],
+['😍','heart eyes','Smileys'],
+['🥰','love face','Smileys'],
+['😘','kiss','Smileys'],
+['😎','cool','Smileys'],
+['😭','cry','Smileys'],
+['😡','angry','Smileys'],
+['🤔','thinking','Smileys'],
+['🥳','party','Smileys'],
+['😴','sleep','Smileys'],
+['🤗','hug','Smileys'],
+['😇','angel','Smileys'],
+['🐶','dog','Animals'],
+['🐱','cat','Animals'],
+['🐭','mouse','Animals'],
+['🐹','hamster','Animals'],
+['🐰','rabbit','Animals'],
+['🦊','fox','Animals'],
+['🐻','bear','Animals'],
+['🐼','panda','Animals'],
+['🦁','lion','Animals'],
+['🐯','tiger','Animals'],
+['🐮','cow','Animals'],
+['🐸','frog','Animals'],
+['🐵','monkey','Animals'],
+['🐔','chicken','Animals'],
+['🦋','butterfly','Animals'],
+['🐬','dolphin','Animals'],
+['🦄','unicorn','Animals'],
+['🍎','apple','Food'],
+['🍌','banana','Food'],
+['🍇','grapes','Food'],
+['🍓','strawberry','Food'],
+['🍉','watermelon','Food'],
+['🍕','pizza','Food'],
+['🍔','burger','Food'],
+['🍟','fries','Food'],
+['🌭','hot dog','Food'],
+['🍿','popcorn','Food'],
+['🍩','donut','Food'],
+['🍫','chocolate','Food'],
+['☕','coffee','Food'],
+['🍰','cake','Food'],
+['🌳','tree','Nature'],
+['🌲','pine tree','Nature'],
+['🌻','sunflower','Nature'],
+['🌹','rose','Nature'],
+['🌈','rainbow','Nature'],
+['☀️','sun','Nature'],
+['🌙','moon','Nature'],
+['⭐','star','Nature'],
+['🔥','fire','Nature'],
+['💧','water','Nature'],
+['🚗','car','Travel'],
+['🚕','taxi','Travel'],
+['🚌','bus','Travel'],
+['🚀','rocket','Travel'],
+['✈️','airplane','Travel'],
+['🚂','train','Travel'],
+['🚲','bicycle','Travel'],
+['❤️','red heart','Hearts'],
+['🧡','orange heart','Hearts'],
+['💛','yellow heart','Hearts'],
+['💚','green heart','Hearts'],
+['💙','blue heart','Hearts'],
+['💜','purple heart','Hearts'],
+['🖤','black heart','Hearts'],
+['🤍','white heart','Hearts'],
+['💔','broken heart','Hearts'],
+['💻','laptop','Objects'],
+['📱','mobile','Objects'],
+['⌚','watch','Objects'],
+['📷','camera','Objects'],
+['💡','bulb','Objects'],
+['📚','books','Objects'],
+['🎧','headphones','Objects'],
+['🎮','game','Objects'],
+['⚽','football','Objects'],
+['🏆','trophy','Objects']
+];
+
+let category = 'All';
+let favorites = JSON.parse(
+  localStorage.getItem('emojiFavorites') || '[]'
+);
+
+function renderEmojis() {
+  const search = document.getElementById('search')
+    .value.toLowerCase();
+
+  const filtered = data.filter(item => {
+    const matchCategory =
+      category === 'All' ||
+      (category === 'Favorites'
+        ? favorites.includes(item[0])
+        : item[2] === category);
+
+    const matchSearch =
+      item[0].includes(search) ||
+      item[1].includes(search);
+
+    return matchCategory && matchSearch;
+  });
+
+  document.getElementById('heading').textContent =
+    category === 'All' ? 'All Emojis' : category + ' Emojis';
+
+  document.getElementById('emojiGrid').innerHTML =
+    filtered.map(item => `
+      <button class="emoji-card"
+        title="${item[1]}"
+        onclick="copyEmoji('${item[0]}')">
+        ${item[0]}
+      </button>
+    `).join('');
+
+  if (!filtered.length) {
+    document.getElementById('emojiGrid').innerHTML =
+      '<p>No emojis found!</p>';
+  }
+}
+
+function setCategory(name, button) {
+  category = name;
+
+  document.querySelectorAll('.categories button')
+    .forEach(btn => btn.classList.remove('active'));
+
+  button.classList.add('active');
+  renderEmojis();
+}
+
+async function copyEmoji(emoji) {
+  try {
+    await navigator.clipboard.writeText(emoji);
+    document.getElementById('message').textContent =
+      emoji + ' Copied successfully! ✅';
+  } catch {
+    document.getElementById('message').textContent =
+      'Copy not supported in this browser.';
+  }
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('light');
+}
+
+renderEmojis();
+</script>
+
+</body>
+</html>
